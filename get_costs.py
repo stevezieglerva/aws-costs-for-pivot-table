@@ -6,11 +6,11 @@ costs_exp = boto3.client("ce")
 
 
 def main():
-	costs = get_costs_for_group("2020-01-01", "2020-04-01","MONTHLY", ["SERVICE", "USAGE_TYPE"] )
+	costs = get_costs_for_group("2019-04-01", "2020-04-01","MONTHLY", ["SERVICE", "USAGE_TYPE"] )
 	#print(json.dumps(costs, indent=3, default=str))
 
 	formatted = format_costs(costs)
-	print("Start,End,Service,Usage,Costs")
+	print("Start\tEnd\tService\tUsage\tCosts")
 	for line in formatted:
 		print(line)
 
@@ -34,8 +34,9 @@ def format_costs(costs):
 			service = group["Keys"][0]
 			usage_type = group["Keys"][1]
 			blended_cost = group["Metrics"]["BlendedCost"]["Amount"]
-			line = f"{start},{end},\"{service}\",\"{usage_type}\",{blended_cost}"
-			lines.append(line)
+			if blended_cost != "0":
+				line = f"{start}\t{end}\t\"{service}\"\t\"{usage_type}\"\t{blended_cost}"
+				lines.append(line)
 	return lines
 
 
