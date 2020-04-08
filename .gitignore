@@ -1,5 +1,4 @@
+*.code-workspace
 venv/**
-results.txt
-results.json
-results.csv
+results.*
 *.xls*
