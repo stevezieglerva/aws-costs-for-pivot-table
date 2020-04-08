@@ -54,7 +54,7 @@ def format_costs(costs):
 		end = time_period["TimePeriod"]["End"]
 		for group in time_period["Groups"]:
 			group1 = group["Keys"][0]
-			group2 = group["Keys"][1]
+			group2 = group["Keys"][1].replace("Type$", "")
 			blended_cost = group["Metrics"]["BlendedCost"]["Amount"]
 			if blended_cost != "0":
 				line = f"{start}\t{end}\t\"{group1}\"\t\"{group2}\"\t{blended_cost}"
