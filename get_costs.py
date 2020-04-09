@@ -129,13 +129,25 @@ def format_dataframe_json(costs):
 			blended_cost = group["Metrics"]["BlendedCost"]["Amount"]
 			results = update_dictionary_item_list(results, "Costs", blended_cost)
 
-
-##			group2 = group["Keys"][1].replace("Type$", "")
-##			blended_cost = group["Metrics"]["BlendedCost"]["Amount"]
-##			if blended_cost != "0":
-##				line = f"{start}\t{end}\t\"{group1}\"\t\"{group2}\"\t{blended_cost}"
-##				lines.append(line)
 	return results
+
+
+def group_data_by_top_and_others(dataframe, column_name, size):
+	top_groupings_list = get_top_groupings(dataframe, column_name, size)
+	print(f"top_groupings: {top_groupings_list}")
+	top_groupings = dataframe[dataframe[column_name].isin(top_groupings_list)]
+	top_grouping_counts = top_groupings.groupby(by=[column_name])["Costs"].sum()
+	print(top_grouping_counts)
+
+	bottom_groupings_list =  get_bottom_groupings(dataframe, column_name, size)
+	print(f"bottom_groupings: {bottom_groupings_list}")
+	bottom_groupings = dataframe[dataframe[column_name].isin(bottom_groupings_list)]
+
+
+	
+	bottom_grouping_counts = bottom_groupings.groupby(by=[column_name])["Costs"].sum()
+	print(bottom_grouping_counts)
+
 
 
 def get_top_groupings(dataframe, column_name, size):

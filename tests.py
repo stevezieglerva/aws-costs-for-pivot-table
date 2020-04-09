@@ -153,34 +153,45 @@ class UnitTests(unittest.TestCase):
 ##		# Assert
 ##		cost_df = pd.DataFrame(results)
 ##		print(cost_df)
+##
+##	def test_get_top_groupings__given_specific_data__then_top_correct_returned(self):
+##		# Arrange
+##		dataframe = pd.DataFrame(grouping_sample)
+##		print(dataframe)
+##		print(dataframe.info())
+##
+##		# Act
+##		top_groupings = get_top_groupings(dataframe, "fruit", 2)
+##		print("*** top groupings")
+##		print(top_groupings)
+##	
+##		# Assert
+##		self.assertEqual(top_groupings, ["pears", "apples"])
+##
+##	def test_get_bottom_groupings__given_specific_data__then_top_correct_returned(self):
+##		# Arrange
+##		dataframe = pd.DataFrame(grouping_sample)
+##		print(dataframe)
+##		print(dataframe.info())
+##
+##		# Act
+##		groupings = get_bottom_groupings(dataframe, "fruit", 2)
+##		print("*** bottom groupings")
+##		print(groupings)
+##	
+##		# Assert
+##		self.assertEqual(groupings, ["blueberries", "oranges"])
 
-	def test_get_top_groupings__given_specific_data__then_top_correct_returned(self):
+	def test_group_data_by_top_and_others__given_data_with_groups__then_correct_groupings_returned(self):
 		# Arrange
 		dataframe = pd.DataFrame(grouping_sample)
-		print(dataframe)
-		print(dataframe.info())
-
-		# Act
-		top_groupings = get_top_groupings(dataframe, "fruit", 2)
-		print("*** top groupings")
-		print(top_groupings)
 	
-		# Assert
-		self.assertEqual(top_groupings, ["pears", "apples"])
-
-	def test_get_bottom_groupings__given_specific_data__then_top_correct_returned(self):
-		# Arrange
-		dataframe = pd.DataFrame(grouping_sample)
-		print(dataframe)
-		print(dataframe.info())
-
 		# Act
-		groupings = get_bottom_groupings(dataframe, "fruit", 2)
-		print("*** bottom groupings")
-		print(groupings)
-	
+		results = group_data_by_top_and_others(dataframe, "fruit", 2)
+
 		# Assert
-		self.assertEqual(groupings, ["blueberries", "oranges"])
+
+
 
 
 if __name__ == "__main__":
