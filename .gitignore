@@ -2,3 +2,5 @@
 venv/**
 results*.*
 *.xls*
+*.png
+__pycache__/**
