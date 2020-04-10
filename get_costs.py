@@ -10,10 +10,13 @@ import calendar
 costs_exp = boto3.client("ce")
 
 
+START_DATE = "2019-05-01"
+END_DATE = "2020-05-01"
+
 def main():
 
 
-	costs = get_costs_for_group("2019-04-01", "2020-04-01","MONTHLY", ["SERVICE", "USAGE_TYPE"] )
+	costs = get_costs_for_group(START_DATE, END_DATE, "MONTHLY", ["SERVICE", "USAGE_TYPE"] )
 	formatted_json = json.dumps(costs, indent=3, default=str)
 ##	with open("results_sample_cost.json", "w") as file:
 ##		file.write(formatted_json)
@@ -46,7 +49,7 @@ def main():
 	top_services.unstack().plot(kind="bar", stacked=True, legend=True)
 	plt.savefig("plot_top_services_bar")
 
-	top_services.unstack().plot(kind="area", stacked=True, legend=True)
+	top_services.unstack().plot(figsize=(10, 4), kind="area", stacked=True, legend=True)
 	plt.savefig("plot_top_services_area")
 
 
@@ -54,7 +57,7 @@ def main():
 	create_plots_for_service_usage_multicharts(service_usage_data, max_monthly_cost)
 
 
-	tag_costs = get_costs_for_group_by_tag_type("2019-04-01", "2020-04-01", "MONTHLY", "SERVICE")
+	tag_costs = get_costs_for_group_by_tag_type(START_DATE, END_DATE, "MONTHLY", "SERVICE")
 	formatted = format_costs(tag_costs)
 	#print("Start\tEnd\tService\tTag\tCosts")
 ##	for line in formatted:
@@ -70,7 +73,7 @@ def create_plots_for_service_multicharts(service_usage_data, max_monthly_cost):
 		print(f"\n\nService: {current_service}")
 		print(service_counts)
 		title = simplify_service_name(current_service)
-		ax = service_counts.plot(figsize=(2, 1.75), kind="line", legend=False, ylim=(0,max_monthly_cost), xlim=("2019-04-01", "2020-04-01"), title=title)
+		ax = service_counts.plot(figsize=(2, 1.75), kind="line", legend=False, ylim=(0,max_monthly_cost + 2), xlim=(START_DATE, END_DATE), title=title)
 		ax.title.set_size(10)
 		plt.axis("off")
 		plt.savefig(f"plot_top_service_line_{count}")
@@ -85,7 +88,7 @@ def create_plots_for_service_usage_multicharts(service_usage_data, max_monthly_c
 		print(f"\n\nService Usage: {current_service}")
 		print(service_counts)
 		title = simplify_service_name(current_service)
-		ax = service_counts.plot(figsize=(2, 2.25), kind="bar", stacked=True, legend=True, ylim=(0,max_monthly_cost), xlim=("2019-04-01", "2020-04-01"), title=title, color=["#0000FF", "#6495ED", "#B0C4DE"])
+		ax = service_counts.plot(figsize=(2, 2.25), kind="bar", stacked=True, legend=True, ylim=(0,max_monthly_cost + 2), xlim=(START_DATE, END_DATE), title=title, color=["#0000FF", "#6495ED", "#B0C4DE"])
 		box = ax.get_position()
 		ax.set_position([box.x0, box.y0 + box.height * 0.1, box.width, box.height * 0.8])
 		ax.title.set_size(10)
