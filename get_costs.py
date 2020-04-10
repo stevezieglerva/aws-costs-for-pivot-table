@@ -11,19 +11,19 @@ costs_exp = boto3.client("ce")
 def main():
 
 
-	costs = get_costs_for_group("2019-04-01", "2020-04-01","MONTHLY", ["SERVICE", "USAGE_TYPE"] )
+##	costs = get_costs_for_group("2019-04-01", "2020-04-01","MONTHLY", ["SERVICE", "USAGE_TYPE"] )
 ##	formatted_json = json.dumps(costs, indent=3, default=str)
 ##	with open("results_sample_cost.json", "w") as file:
 ##		file.write(formatted_json)
-	formatted = format_costs(costs)
+##	formatted = format_costs(costs)
 ##	print("Type\tStart\tEnd\tGroup1\tGroup2\tCosts")
 ##	for line in formatted:
 ##		print("Usage\t" + line)
 
-	formatted_with_newlines = ["Usage\t" + i + "\n" for i in formatted]
-	with open("results.tsv", "w") as file:
-		file.write("Type\tStart\tEnd\tGroup1\tGroup2\tCosts\n")
-		file.writelines(formatted_with_newlines)
+##	formatted_with_newlines = ["Usage\t" + i + "\n" for i in formatted]
+##	with open("results.tsv", "w") as file:
+##		file.write("Type\tStart\tEnd\tGroup1\tGroup2\tCosts\n")
+##		file.writelines(formatted_with_newlines)
 
 	plt.style.use("seaborn")
 
@@ -39,8 +39,14 @@ def main():
 
 	top_services = group_data_by_top_and_others(service_usage_data, "Group1", 5)
 	print(top_services)
-	top_services.unstack().plot(kind="bar", legend=True)
-	plt.savefig("plot_top_services")
+	top_services.unstack().plot(kind="line", legend=True)
+	plt.savefig("plot_top_services_line")
+
+	top_services.unstack().plot(kind="bar", stacked=True, legend=True)
+	plt.savefig("plot_top_services_bar")
+
+	top_services.unstack().plot(kind="area", stacked=True, legend=True)
+	plt.savefig("plot_top_services_area")
 
 
 	cw = service_usage_data[service_usage_data["Group2"] == "CW:AlarmMonitorUsage"][["Start", "Costs"]]
@@ -161,6 +167,13 @@ def group_data_by_top_and_others(dataframe, column_name, size):
 	print(top_grouping_counts)
 
 	return top_grouping_counts
+
+
+def get_single_grouping(dataframe, column, filter_value):
+	filtered_df = dataframe[column] = filter_value
+	grouped = filtered_df.groupby(by="Start")["Costs"].sum().to_frame()
+	return grouped
+
 
 
 
