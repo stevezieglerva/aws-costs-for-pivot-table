@@ -3,6 +3,8 @@ import json
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
+from datetime import datetime
+import calendar
 
 
 costs_exp = boto3.client("ce")
@@ -55,7 +57,8 @@ def main():
 		service_counts = get_single_grouping(service_usage_data, "Group1", current_service)
 		print(f"\n\nService: {current_service}")
 		print(service_counts)
-		service_counts.plot(kind="line", legend=True)
+		ax = service_counts.plot(figsize=(3, 2), kind="line", legend=False, ylim=(0,40), xlim=("2019-04-01", "2020-04-01"), title=current_service)
+		plt.axis("off")
 		plt.savefig(f"plot_top_service_line_{count}")
 
 
