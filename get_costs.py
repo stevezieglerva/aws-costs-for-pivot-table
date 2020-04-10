@@ -48,33 +48,18 @@ def main():
 	top_services.unstack().plot(kind="area", stacked=True, legend=True)
 	plt.savefig("plot_top_services_area")
 
-
-	cw = service_usage_data[service_usage_data["Group2"] == "CW:AlarmMonitorUsage"][["Start", "Costs"]]
-	cw["Start"] =  pd.to_datetime(cw["Start"], format="%Y-%m-%d")
-	cw.set_index("Start", inplace=True)
-	print(cw)
-	print(cw.info())
-	cw.plot(kind="line")
-	plt.savefig("plot_cw_usage")
-
-
-	top_services = service_usage_data.groupby(by=["Group1"])["Costs"].sum().nlargest(5)
-	print(top_services)
+	top_services_list = get_top_groupings(service_usage_data, "Group1", 5)
+	count = 0
+	for current_service in top_services_list:
+		count = count + 1
+		service_counts = get_single_grouping(service_usage_data, "Group1", current_service)
+		print(f"\n\nService: {current_service}")
+		print(service_counts)
+		service_counts.plot(kind="line", legend=True)
+		plt.savefig(f"plot_top_service_line_{count}")
 
 
-	plt.title = "Service Costs/month"
-	plt.xlabel = "Date"
-	plt.ylabel = "Costs"
-	service_grouping = service_usage_data.groupby(by=["Start", "Group1"])["Costs"].sum()
-	graph = service_grouping.unstack().plot(legend=False)
-	graph.legend(["EC2 - Other"])
-	plt.savefig("plot_service_by_month")
 
-	service_grouping["Start"] =  pd.to_datetime(service_usage_data["Start"], format="%Y-%m-%d")
-	print("Sums")
-	with pd.option_context('display.max_rows', None, 'display.max_columns', None):  # more options can be specified also
-		print(service_grouping)
-	print("End Sums")
 
 
 	tag_costs = get_costs_for_group_by_tag_type("2019-04-01", "2020-04-01", "MONTHLY", "SERVICE")
@@ -170,12 +155,9 @@ def group_data_by_top_and_others(dataframe, column_name, size):
 
 
 def get_single_grouping(dataframe, column, filter_value):
-	filtered_df = dataframe[column] = filter_value
+	filtered_df = dataframe[dataframe[column] == filter_value]
 	grouped = filtered_df.groupby(by="Start")["Costs"].sum().to_frame()
 	return grouped
-
-
-
 
 
 def get_top_groupings(dataframe, column_name, size):
