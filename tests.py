@@ -88,8 +88,15 @@ cost_data = {
 
 grouping_sample = {
 	"fruit" : ["apples", "pears", "oranges", "apples", "oranges", "blueberries"],
-	"Costs" : [4, 50, 6, 4, 1, 0]
+	"Costs" : [4, 50, 6, 4, 1, 1]
 }
+
+grouping_sample = {
+	"Start" : ["2020-01-01", "2020-01-01", "2020-01-01", "2020-01-01", "2020-01-01", "2020-01-01", "2020-02-02", "2020-03-03"],
+	"fruit" : ["apples", "pears", "oranges", "apples", "oranges", "blueberries", "apples", "oranges"],
+	"Costs" : [4, 50, 6, 4, 1, 1, 5, 1]
+}
+
 
 class UnitTests(unittest.TestCase):
 ##	def test_update_dictionary_item_list__given_empty_list__then_one_item_added(self):

@@ -11,19 +11,19 @@ costs_exp = boto3.client("ce")
 def main():
 
 
-##	costs = get_costs_for_group("2019-04-01", "2020-04-01","MONTHLY", ["SERVICE", "USAGE_TYPE"] )
+	costs = get_costs_for_group("2019-04-01", "2020-04-01","MONTHLY", ["SERVICE", "USAGE_TYPE"] )
 ##	formatted_json = json.dumps(costs, indent=3, default=str)
 ##	with open("results_sample_cost.json", "w") as file:
 ##		file.write(formatted_json)
-##	formatted = format_costs(costs)
+	formatted = format_costs(costs)
 ##	print("Type\tStart\tEnd\tGroup1\tGroup2\tCosts")
 ##	for line in formatted:
 ##		print("Usage\t" + line)
 
-##	formatted_with_newlines = ["Usage\t" + i + "\n" for i in formatted]
-##	with open("results.tsv", "w") as file:
-##		file.write("Type\tStart\tEnd\tGroup1\tGroup2\tCosts\n")
-##		file.writelines(formatted_with_newlines)
+	formatted_with_newlines = ["Usage\t" + i + "\n" for i in formatted]
+	with open("results.tsv", "w") as file:
+		file.write("Type\tStart\tEnd\tGroup1\tGroup2\tCosts\n")
+		file.writelines(formatted_with_newlines)
 
 	plt.style.use("seaborn")
 
@@ -35,6 +35,12 @@ def main():
 	df_json = service_usage_data.to_json(orient="columns")
 	with open("results_df.json", "w") as file:
 		file.write(df_json)
+
+
+	top_services = group_data_by_top_and_others(service_usage_data, "Group1", 5)
+	print(top_services)
+	top_services.unstack().plot(kind="bar", legend=True)
+	plt.savefig("plot_top_services")
 
 
 	cw = service_usage_data[service_usage_data["Group2"] == "CW:AlarmMonitorUsage"][["Start", "Costs"]]
@@ -136,17 +142,26 @@ def group_data_by_top_and_others(dataframe, column_name, size):
 	top_groupings_list = get_top_groupings(dataframe, column_name, size)
 	print(f"top_groupings: {top_groupings_list}")
 	top_groupings = dataframe[dataframe[column_name].isin(top_groupings_list)]
-	top_grouping_counts = top_groupings.groupby(by=[column_name])["Costs"].sum()
-	print(top_grouping_counts)
+	top_grouping_counts = top_groupings.groupby(by=["Start", column_name])["Costs"].sum()
 
 	bottom_groupings_list =  get_bottom_groupings(dataframe, column_name, size)
 	print(f"bottom_groupings: {bottom_groupings_list}")
 	bottom_groupings = dataframe[dataframe[column_name].isin(bottom_groupings_list)]
+	bottom_grouping_counts = bottom_groupings.groupby(by=["Start"])["Costs"].sum().to_frame()
 
+	for index, row in bottom_grouping_counts.iterrows():
+		print(row)
+		start =  index
+		column_name = "Other"
+		costs = row["Costs"]
+		print(f"{start}/{column_name}/{costs}")
+		top_grouping_counts[start, column_name] = costs
 
-	
-	bottom_grouping_counts = bottom_groupings.groupby(by=[column_name])["Costs"].sum()
-	print(bottom_grouping_counts)
+	print("_____")
+	print(top_grouping_counts)
+
+	return top_grouping_counts
+
 
 
 
