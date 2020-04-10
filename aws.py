@@ -42,6 +42,13 @@ def format_costs(costs):
 	return lines
 
 
+def update_dictionary_item_list(current_dict, field_name, value):
+	current_list = current_dict.get(field_name, [])
+	current_list.append(value)
+	current_dict[field_name] = current_list
+	return current_dict
+
+
 def format_dataframe_json(costs):
 	results = {}
 	for time_period in costs["ResultsByTime"]:
@@ -60,3 +67,4 @@ def format_dataframe_json(costs):
 			results = update_dictionary_item_list(results, "Costs", blended_cost)
 
 	return results
+

@@ -2,6 +2,7 @@ import unittest
 from unittest.mock import patch, Mock, MagicMock, PropertyMock
 from get_costs import *
 import pandas as pd
+from aws import *
 
 
 

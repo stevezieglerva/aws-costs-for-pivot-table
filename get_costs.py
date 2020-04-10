@@ -156,13 +156,6 @@ def get_bottom_groupings(dataframe, column_name, except_top_size):
 	return groupings.index.values.tolist()
 
 
-def update_dictionary_item_list(current_dict, field_name, value):
-	current_list = current_dict.get(field_name, [])
-	current_list.append(value)
-	current_dict[field_name] = current_list
-	return current_dict
-
-
 def simplify_service_name(name):
 	new_name = name.replace("Amazon", "").replace("AWS", "")
 	new_name = new_name.replace("Elastic File System", "EFS")
@@ -170,9 +163,6 @@ def simplify_service_name(name):
 	new_name = new_name.replace("Elastic Compute Cloud", "EC2")
 	new_name = new_name.replace("Relational Database Service", "RDS")
 	new_name = new_name.replace("Simple Storage Service", "S3")
-
-
-
 	return new_name
 
 
