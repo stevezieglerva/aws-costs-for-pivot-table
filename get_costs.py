@@ -16,20 +16,12 @@ MONTHLY_START_DATE = "2019-04-01"
 MONTHLY_END_DATE = "2020-04-01"
 
 def main():
-
-	get_and_write_costs_to_files()
-
-
-	service_usage_data = pd.read_csv("results.tsv", sep="\t")
-	service_usage_data["Start"] =  pd.to_datetime(service_usage_data["Start"], format="%Y-%m-%d")
-	print(service_usage_data)
-	print(service_usage_data.info())
-
-	df_json = service_usage_data.to_json(orient="columns")
-	with open("results_df.json", "w") as file:
-		file.write(df_json)
-
 	plt.style.use("seaborn")
+	get_and_write_costs_to_files()
+	service_usage_data = import_cost_file_into_df()
+
+
+
 
 	top_services = group_data_by_top_and_others(service_usage_data, "Group1", 5)
 	print(top_services)
@@ -39,7 +31,7 @@ def main():
 	top_services.unstack().plot(kind="line", legend=True)
 	plt.savefig("plot_top_services_line")
 
-	top_services.unstack().plot(kind="bar", stacked=True, legend=True)
+	top_services.unstack().plot(kind="bar", stacked=True, width=.9, legend=True)
 	plt.savefig("plot_top_services_bar")
 
 	top_services.unstack().plot(figsize=(10, 4), kind="area", stacked=True, legend=True)
@@ -57,6 +49,14 @@ def main():
 ##		print("Type\t" + line)
 
 
+
+def import_cost_file_into_df():
+	service_usage_data = pd.read_csv("results.tsv", sep="\t")
+	service_usage_data["Start"] =  pd.to_datetime(service_usage_data["Start"], format="%Y-%m-%d")
+	print(service_usage_data)
+	print(service_usage_data.info())
+	return service_usage_data
+
 def get_and_write_costs_to_files():
 	costs = get_costs_for_group(MONTHLY_START_DATE, MONTHLY_END_DATE, "MONTHLY", ["SERVICE", "USAGE_TYPE"] )
 	formatted_json = json.dumps(costs, indent=3, default=str)
@@ -67,6 +67,7 @@ def get_and_write_costs_to_files():
 	with open("results.tsv", "w") as file:
 		file.write("Type\tStart\tEnd\tGroup1\tGroup2\tCosts\n")
 		file.writelines(formatted_with_newlines)
+
 
 def create_plots_for_service_multicharts(service_usage_data, max_monthly_cost):
 	top_services_list = get_top_groupings(service_usage_data, "Group1", 5)
@@ -92,7 +93,7 @@ def create_plots_for_service_usage_multicharts(service_usage_data, max_monthly_c
 		print(f"\n\nService Usage: {current_service}")
 		print(service_counts)
 		title = simplify_service_name(current_service)
-		ax = service_counts.plot(figsize=(2, 2.25), kind="bar", stacked=True, legend=True, ylim=(0,max_monthly_cost + 2), xlim=(MONTHLY_START_DATE, MONTHLY_END_DATE), title=title, color=["#0000FF", "#6495ED", "#B0C4DE"])
+		ax = service_counts.plot(figsize=(2, 2.25), kind="line", legend=True, ylim=(0,max_monthly_cost + 2), xlim=(MONTHLY_START_DATE, MONTHLY_END_DATE), title=title, color=["#0000FF", "#6495ED", "#B0C4DE"])
 		box = ax.get_position()
 		ax.set_position([box.x0, box.y0 + box.height * 0.1, box.width, box.height * 0.8])
 		ax.title.set_size(10)
