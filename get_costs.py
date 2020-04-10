@@ -50,6 +50,18 @@ def main():
 	plt.savefig("plot_top_services_area")
 
 
+	create_plots_for_service_multicharts(service_usage_data, max_monthly_cost)
+	create_plots_for_service_usage_multicharts(service_usage_data, max_monthly_cost)
+
+
+	tag_costs = get_costs_for_group_by_tag_type("2019-04-01", "2020-04-01", "MONTHLY", "SERVICE")
+	formatted = format_costs(tag_costs)
+	#print("Start\tEnd\tService\tTag\tCosts")
+##	for line in formatted:
+##		print("Type\t" + line)
+
+
+def create_plots_for_service_multicharts(service_usage_data, max_monthly_cost):
 	top_services_list = get_top_groupings(service_usage_data, "Group1", 5)
 	count = 0
 	for current_service in top_services_list:
@@ -64,14 +76,22 @@ def main():
 		plt.savefig(f"plot_top_service_line_{count}")
 
 
-
-
-
-	tag_costs = get_costs_for_group_by_tag_type("2019-04-01", "2020-04-01", "MONTHLY", "SERVICE")
-	formatted = format_costs(tag_costs)
-	#print("Start\tEnd\tService\tTag\tCosts")
-##	for line in formatted:
-##		print("Type\t" + line)
+def create_plots_for_service_usage_multicharts(service_usage_data, max_monthly_cost):
+	top_services_list = get_top_groupings(service_usage_data, "Group1", 5)
+	count = 0
+	for current_service in top_services_list:
+		count = count + 1
+		service_counts = get_single_usage_grouping(service_usage_data, "Group1", current_service, 3).unstack()
+		print(f"\n\nService Usage: {current_service}")
+		print(service_counts)
+		title = simplify_service_name(current_service)
+		ax = service_counts.plot(figsize=(2, 2.25), kind="bar", stacked=True, legend=True, ylim=(0,max_monthly_cost), xlim=("2019-04-01", "2020-04-01"), title=title, color=["#0000FF", "#6495ED", "#B0C4DE"])
+		box = ax.get_position()
+		ax.set_position([box.x0, box.y0 + box.height * 0.1, box.width, box.height * 0.8])
+		ax.title.set_size(10)
+		ax.legend(prop={"size":6}, loc='upper center', bbox_to_anchor=(0.5, -0.05), fancybox=True, shadow=True, ncol=1)
+		plt.axis("off")
+		plt.savefig(f"plot_top_service_usage_{count}")
 
 
 def get_costs_for_group(start, end, granularity, groupby):
@@ -164,9 +184,21 @@ def get_single_grouping(dataframe, column, filter_value):
 	return grouped
 
 
-def get_top_groupings(dataframe, column_name, size):
-	groupings = dataframe.groupby(by=[column_name])["Costs"].sum().nlargest(size).to_frame()
-	return groupings.index.values.tolist()
+def get_single_usage_grouping(dataframe, column, filter_value, size):
+	filtered_df = dataframe[dataframe[column] == filter_value]
+	print(filtered_df)
+	top_usages_list = get_top_groupings(filtered_df, "Group2", size)
+	print(f"top_usages_list: {top_usages_list}")
+	filtered_df = filtered_df[filtered_df["Group2"].isin(top_usages_list)]
+	grouped = filtered_df.groupby(by=["Start", "Group2"])["Costs"].sum().to_frame()
+	return grouped
+
+
+def get_top_groupings(dataframe, column_name, size, filter_column="", filter_name=""):
+	#if filter_column != "":
+	#	dataframe = dataframe[dataframe[filter_column] == filter_name]
+	dataframe = dataframe.groupby(by=[column_name])["Costs"].sum().nlargest(size).to_frame()
+	return dataframe.index.values.tolist()
 
 
 def get_bottom_groupings(dataframe, column_name, except_top_size):
