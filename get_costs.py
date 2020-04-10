@@ -13,19 +13,15 @@ costs_exp = boto3.client("ce")
 def main():
 
 
-##	costs = get_costs_for_group("2019-04-01", "2020-04-01","MONTHLY", ["SERVICE", "USAGE_TYPE"] )
-##	formatted_json = json.dumps(costs, indent=3, default=str)
+	costs = get_costs_for_group("2019-04-01", "2020-04-01","MONTHLY", ["SERVICE", "USAGE_TYPE"] )
+	formatted_json = json.dumps(costs, indent=3, default=str)
 ##	with open("results_sample_cost.json", "w") as file:
 ##		file.write(formatted_json)
-##	formatted = format_costs(costs)
-##	print("Type\tStart\tEnd\tGroup1\tGroup2\tCosts")
-##	for line in formatted:
-##		print("Usage\t" + line)
-
-##	formatted_with_newlines = ["Usage\t" + i + "\n" for i in formatted]
-##	with open("results.tsv", "w") as file:
-##		file.write("Type\tStart\tEnd\tGroup1\tGroup2\tCosts\n")
-##		file.writelines(formatted_with_newlines)
+	formatted = format_costs(costs)
+	formatted_with_newlines = ["Usage\t" + i + "\n" for i in formatted]
+	with open("results.tsv", "w") as file:
+		file.write("Type\tStart\tEnd\tGroup1\tGroup2\tCosts\n")
+		file.writelines(formatted_with_newlines)
 
 	plt.style.use("seaborn")
 
@@ -41,6 +37,9 @@ def main():
 
 	top_services = group_data_by_top_and_others(service_usage_data, "Group1", 5)
 	print(top_services)
+	print(top_services.to_frame().info())
+	max_monthly_cost = top_services.max()
+	print(f"max_monthly_cost:  {max_monthly_cost}")
 	top_services.unstack().plot(kind="line", legend=True)
 	plt.savefig("plot_top_services_line")
 
@@ -50,6 +49,7 @@ def main():
 	top_services.unstack().plot(kind="area", stacked=True, legend=True)
 	plt.savefig("plot_top_services_area")
 
+
 	top_services_list = get_top_groupings(service_usage_data, "Group1", 5)
 	count = 0
 	for current_service in top_services_list:
@@ -57,7 +57,9 @@ def main():
 		service_counts = get_single_grouping(service_usage_data, "Group1", current_service)
 		print(f"\n\nService: {current_service}")
 		print(service_counts)
-		ax = service_counts.plot(figsize=(3, 2), kind="line", legend=False, ylim=(0,40), xlim=("2019-04-01", "2020-04-01"), title=current_service)
+		title = simplify_service_name(current_service)
+		ax = service_counts.plot(figsize=(2, 1.75), kind="line", legend=False, ylim=(0,max_monthly_cost), xlim=("2019-04-01", "2020-04-01"), title=title)
+		ax.title.set_size(10)
 		plt.axis("off")
 		plt.savefig(f"plot_top_service_line_{count}")
 
@@ -136,7 +138,7 @@ def group_data_by_top_and_others(dataframe, column_name, size):
 	top_groupings_list = get_top_groupings(dataframe, column_name, size)
 	print(f"top_groupings: {top_groupings_list}")
 	top_groupings = dataframe[dataframe[column_name].isin(top_groupings_list)]
-	top_grouping_counts = top_groupings.groupby(by=["Start", column_name])["Costs"].sum()
+	top_grouping_counts = top_groupings.groupby(by=["Start", column_name])["Costs"].sum().rename("Costs")
 
 	bottom_groupings_list =  get_bottom_groupings(dataframe, column_name, size)
 	print(f"bottom_groupings: {bottom_groupings_list}")
@@ -153,7 +155,6 @@ def group_data_by_top_and_others(dataframe, column_name, size):
 
 	print("_____")
 	print(top_grouping_counts)
-
 	return top_grouping_counts
 
 
@@ -183,6 +184,17 @@ def update_dictionary_item_list(current_dict, field_name, value):
 	return current_dict
 
 
+def simplify_service_name(name):
+	new_name = name.replace("Amazon", "").replace("AWS", "")
+	new_name = new_name.replace("Elastic File System", "EFS")
+	new_name = new_name.replace("Elastic Load Balancing", "ELB")
+	new_name = new_name.replace("Elastic Compute Cloud", "EC2")
+	new_name = new_name.replace("Relational Database Service", "RDS")
+	new_name = new_name.replace("Simple Storage Service", "S3")
+
+
+
+	return new_name
 
 
 if __name__ == "__main__":
