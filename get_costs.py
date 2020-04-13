@@ -5,6 +5,7 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 from datetime import datetime
+from datetime import timedelta
 from aws import *
 from panda_helpers import *
 
@@ -14,8 +15,10 @@ costs_exp = boto3.client("ce")
 
 MONTHLY_START_DATE = "2019-04-01"
 MONTHLY_END_DATE = "2020-04-01"
-DAILY_START_DATE = "2020-03-01"
-DAILY_END_DATE = "2020-04-01"
+
+previous = datetime.now() - timedelta(days=45)
+DAILY_START_DATE = previous.strftime("%Y-%m-%d")
+DAILY_END_DATE = datetime.now().strftime("%Y-%m-%d")
 
 def main():
 	plt.style.use("seaborn")
@@ -100,6 +103,7 @@ def create_plots_for_service_multicharts(service_usage_data, max_monthly_cost, f
 		ax.title.set_size(10)
 		plt.axis("off")
 		plt.savefig(f"plot_top_service_line_{filename_qualifier}_{count}")
+
 
 
 def create_plots_for_service_usage_multicharts(service_usage_data, max_monthly_cost, filename_qualifier, start, end):
