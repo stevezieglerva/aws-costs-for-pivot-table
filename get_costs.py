@@ -13,8 +13,12 @@ from panda_helpers import *
 costs_exp = boto3.client("ce")
 
 
-MONTHLY_START_DATE = "2019-04-01"
-MONTHLY_END_DATE = "2020-04-01"
+current_year = datetime.now().year
+current_month = datetime.now().month
+previous_year = current_year - 1
+
+MONTHLY_START_DATE = f"{previous_year}-{current_month:02d}-01"
+MONTHLY_END_DATE = f"{current_year}-{current_month:02d}-01"
 
 previous = datetime.now() - timedelta(days=45)
 DAILY_START_DATE = previous.strftime("%Y-%m-%d")
