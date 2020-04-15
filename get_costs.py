@@ -27,7 +27,7 @@ DAILY_END_DATE = datetime.now().strftime("%Y-%m-%d")
 
 def main():
     plt.style.use("seaborn")
-    # get_and_write_costs_to_files()
+    get_and_write_costs_to_files()
     service_usage_data = import_cost_file_into_df("results_service_usage_monthly.tsv")
     max_monthly_cost = create_services_over_time_options(service_usage_data, "monthly")
     create_plots_for_service_multicharts(
@@ -161,7 +161,7 @@ def create_plots_for_service_usage_multicharts(
         print(service_counts)
         title = simplify_service_name(current_service)
         ax = service_counts.plot(
-            figsize=(2, 2.5),
+            figsize=(2, 3),
             kind="bar",
             stacked=True,
             legend=False,
