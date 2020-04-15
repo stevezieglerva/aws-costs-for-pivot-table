@@ -105,6 +105,9 @@ def create_plots_for_service_multicharts(service_usage_data, max_monthly_cost, f
 		title = simplify_service_name(current_service)
 		ax = service_counts.plot(figsize=(2, 1.75), kind="line", legend=False, ylim=(0,max_monthly_cost + 2), xlim=(start, end), title=title)
 		ax.title.set_size(10)
+		#x_axis = ax.xaxis
+		#x_axis.set_label_text('foo')
+		#x_axis.label.set_visible(False)
 		plt.axis("off")
 		plt.savefig(f"plot_top_service_line_{filename_qualifier}_{count}")
 
@@ -119,7 +122,7 @@ def create_plots_for_service_usage_multicharts(service_usage_data, max_monthly_c
 		print(f"\n\nService Usage: {current_service}")
 		print(service_counts)
 		title = simplify_service_name(current_service)
-		ax = service_counts.plot(figsize=(2, 2.25), kind="line", legend=True, ylim=(0,max_monthly_cost + 2), xlim=(start, end), title=title, color=["#0000FF", "#6495ED", "#B0C4DE"])
+		ax = service_counts.plot(figsize=(2, 2.25), kind="line", legend=False, ylim=(0,max_monthly_cost + 2), xlim=(start, end), title=title, color=["#0000FF", "#6495ED", "#B0C4DE"])
 		box = ax.get_position()
 		ax.set_position([box.x0, box.y0 + box.height * 0.1, box.width, box.height * 0.8])
 		ax.title.set_size(10)
