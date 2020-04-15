@@ -27,7 +27,7 @@ DAILY_END_DATE = datetime.now().strftime("%Y-%m-%d")
 
 def main():
     plt.style.use("seaborn")
-    get_and_write_costs_to_files()
+    # get_and_write_costs_to_files()
     service_usage_data = import_cost_file_into_df("results_service_usage_monthly.tsv")
     max_monthly_cost = create_services_over_time_options(service_usage_data, "monthly")
     create_plots_for_service_multicharts(
@@ -145,6 +145,7 @@ def create_plots_for_service_multicharts(
         plt.axis("off")
         plt.savefig(f"plot_top_service_line_{filename_qualifier}_{count}")
 
+
 def create_plots_for_service_usage_multicharts(
     service_usage_data, max_monthly_cost, filename_qualifier, start, end
 ):
@@ -152,24 +153,26 @@ def create_plots_for_service_usage_multicharts(
     count = 0
     for current_service in top_services_list:
         count = count + 1
-        service_counts = get_single_usage_grouping(
-            service_usage_data, "Group1", current_service, 3
+        filtered_df = service_usage_data[service_usage_data["Group1"] == current_service]
+        service_counts = group_data_by_top_and_others(
+            filtered_df, "Group2", 3
         ).unstack()
         print(f"\n\nService Usage: {current_service}")
         print(service_counts)
         title = simplify_service_name(current_service)
         ax = service_counts.plot(
-            figsize=(2, 2.25),
-            kind="line",
+            figsize=(2, 2.5),
+            kind="bar",
+            stacked=True,
             legend=False,
             ylim=(0, max_monthly_cost + 2),
             xlim=(start, end),
             title=title,
-            color=["#0000FF", "#6495ED", "#B0C4DE"],
+            color=["#0000FF", "#6495ED", "#B0C4DE", "#DCDCDC"],
         )
         box = ax.get_position()
         ax.set_position(
-            [box.x0, box.y0 + box.height * 0.1, box.width, box.height * 0.8]
+            [box.x0, box.y0 + box.height * 0.1, box.width, box.height * 0.5]
         )
         ax.title.set_size(10)
         ax.legend(
@@ -182,7 +185,6 @@ def create_plots_for_service_usage_multicharts(
         )
         plt.axis("off")
         plt.savefig(f"plot_top_service_usage_{filename_qualifier}_{count}")
-
 
 
 if __name__ == "__main__":
