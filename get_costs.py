@@ -29,21 +29,27 @@ def main():
     plt.style.use("seaborn")
     get_and_write_costs_to_files()
     service_usage_data = import_cost_file_into_df("results_service_usage_monthly.tsv")
-    max_monthly_cost = create_services_over_time_options(service_usage_data, "monthly")
-    create_plots_for_service_multicharts(
-        service_usage_data,
-        max_monthly_cost,
-        "monthly",
-        MONTHLY_START_DATE,
-        MONTHLY_END_DATE,
-    )
-    create_plots_for_service_usage_multicharts(
-        service_usage_data,
-        max_monthly_cost,
-        "monthly",
-        MONTHLY_START_DATE,
-        MONTHLY_END_DATE,
-    )
+    try:
+        max_monthly_cost = create_services_over_time_options(
+            service_usage_data, "monthly"
+        )
+        create_plots_for_service_multicharts(
+            service_usage_data,
+            max_monthly_cost,
+            "monthly",
+            MONTHLY_START_DATE,
+            MONTHLY_END_DATE,
+        )
+        create_plots_for_service_usage_multicharts(
+            service_usage_data,
+            max_monthly_cost,
+            "monthly",
+            MONTHLY_START_DATE,
+            MONTHLY_END_DATE,
+        )
+    except AttributeError as e:
+        print(e)
+        print("Not enough monthly data for charts")
 
     service_usage_data = import_cost_file_into_df("results_service_usage_daily.tsv")
     max_cost = create_services_over_time_options(service_usage_data, "daily")
@@ -112,9 +118,10 @@ def create_services_over_time_options(service_usage_data, filename_qualifier):
     top_services.unstack().plot(kind="bar", stacked=True, width=0.9, legend=True)
     plt.savefig("plot_top_services_bar")
 
-    ax = top_services.unstack().plot(figsize=(10, 4), kind="area", stacked=True, legend=True)
+    ax = top_services.unstack().plot(
+        figsize=(10, 4), kind="area", stacked=True, legend=True
+    )
     ax.legend(frameon=True)
-
 
     plt.savefig(f"plot_top_services_area_{filename_qualifier}")
     return max_monthly_cost
@@ -156,7 +163,9 @@ def create_plots_for_service_usage_multicharts(
     count = 0
     for current_service in top_services_list:
         count = count + 1
-        filtered_df = service_usage_data[service_usage_data["Group1"] == current_service]
+        filtered_df = service_usage_data[
+            service_usage_data["Group1"] == current_service
+        ]
         service_counts = group_data_by_top_and_others(
             filtered_df, "Group2", 3
         ).unstack()
