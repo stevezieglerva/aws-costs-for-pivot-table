@@ -112,7 +112,10 @@ def create_services_over_time_options(service_usage_data, filename_qualifier):
     top_services.unstack().plot(kind="bar", stacked=True, width=0.9, legend=True)
     plt.savefig("plot_top_services_bar")
 
-    top_services.unstack().plot(figsize=(10, 4), kind="area", stacked=True, legend=True)
+    ax = top_services.unstack().plot(figsize=(10, 4), kind="area", stacked=True, legend=True)
+    ax.legend(frameon=True)
+
+
     plt.savefig(f"plot_top_services_area_{filename_qualifier}")
     return max_monthly_cost
 
