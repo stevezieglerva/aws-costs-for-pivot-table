@@ -14,7 +14,7 @@ costs_exp = boto3.client("ce")
 
 
 current_year = datetime.now().year
-current_month = datetime.now().month
+current_month = datetime.now().month + 1
 previous_year = current_year - 1
 
 MONTHLY_START_DATE = f"{previous_year}-{current_month:02d}-01"
@@ -173,7 +173,7 @@ def create_plots_for_service_usage_multicharts(
         print(service_counts)
         title = simplify_service_name(current_service)
         ax = service_counts.plot(
-            figsize=(2, 3),
+            figsize=(2, 3.5),
             kind="bar",
             stacked=True,
             legend=False,
@@ -184,11 +184,11 @@ def create_plots_for_service_usage_multicharts(
         )
         box = ax.get_position()
         ax.set_position(
-            [box.x0, box.y0 + box.height * 0.1, box.width, box.height * 0.5]
+            [box.x0, box.y0 + box.height * 0.1, box.width, box.height * 0.9]
         )
         ax.title.set_size(10)
         ax.legend(
-            prop={"size": 6},
+            prop={"size": 8},
             loc="upper center",
             bbox_to_anchor=(0.5, -0.05),
             fancybox=True,
