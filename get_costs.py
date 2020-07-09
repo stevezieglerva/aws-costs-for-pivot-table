@@ -14,7 +14,7 @@ costs_exp = boto3.client("ce")
 
 
 current_year = datetime.now().year
-current_month = datetime.now().month + 1
+current_month = datetime.now().month
 previous_year = current_year - 1
 
 MONTHLY_START_DATE = f"{previous_year}-{current_month:02d}-01"
