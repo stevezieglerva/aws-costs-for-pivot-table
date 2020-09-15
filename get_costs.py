@@ -64,6 +64,12 @@ def main():
     create_plots_for_service_usage_multicharts(
         service_usage_data, max_cost, "daily", DAILY_START_DATE, DAILY_END_DATE
     )
+    service_operation_data = import_cost_file_into_df(
+        "results_service_operation_daily.tsv"
+    )
+    create_plots_for_service_operation_multicharts(
+        service_operation_data, max_cost, "daily", DAILY_START_DATE, DAILY_END_DATE
+    )
 
     ## Temp costs by tag. Data is correct, move it to create tsv file
     tag_costs = get_costs_for_group_by_tag_type(
@@ -180,13 +186,37 @@ def create_plots_for_service_multicharts(
 def create_plots_for_service_usage_multicharts(
     service_usage_data, max_monthly_cost, filename_qualifier, start, end
 ):
-    top_services_list = get_top_groupings(service_usage_data, "Group1", 5)
+    create_plots_for_service_group_multicharts(
+        service_usage_data,
+        max_monthly_cost,
+        filename_qualifier,
+        start,
+        end,
+        "usage_type",
+    )
+
+
+def create_plots_for_service_operation_multicharts(
+    service_operation_data, max_monthly_cost, filename_qualifier, start, end
+):
+    create_plots_for_service_group_multicharts(
+        service_operation_data,
+        max_monthly_cost,
+        filename_qualifier,
+        start,
+        end,
+        "operation",
+    )
+
+
+def create_plots_for_service_group_multicharts(
+    service_data, max_monthly_cost, filename_qualifier, start, end, groupby_name
+):
+    top_services_list = get_top_groupings(service_data, "Group1", 5)
     count = 0
     for current_service in top_services_list:
         count = count + 1
-        filtered_df = service_usage_data[
-            service_usage_data["Group1"] == current_service
-        ]
+        filtered_df = service_data[service_data["Group1"] == current_service]
         service_counts = group_data_by_top_and_others(
             filtered_df, "Group2", 3
         ).unstack()
@@ -217,7 +247,7 @@ def create_plots_for_service_usage_multicharts(
             ncol=1,
         )
         plt.axis("off")
-        plt.savefig(f"plot_top_service_usage_{filename_qualifier}_{count}")
+        plt.savefig(f"plot_top_service_{groupby_name}_{filename_qualifier}_{count}")
 
 
 if __name__ == "__main__":
