@@ -90,6 +90,12 @@ def main():
         service_operation_data, max_cost, "daily", DAILY_START_DATE, DAILY_END_DATE
     )
 
+    # Tags
+    service_tag_type_data = import_cost_file_into_df("results_service_tag_daily.tsv")
+    create_plots_for_service_tag_type_multicharts(
+        service_tag_type_data, max_cost, "daily", DAILY_START_DATE, DAILY_END_DATE
+    )
+
 
 def get_and_write_costs_to_files():
     get_and_write_single_cost_file(
@@ -103,12 +109,22 @@ def get_and_write_costs_to_files():
     )
 
     ## Temp costs by tag. Data is correct, move it to create tsv file
-    tag_costs = get_costs_for_group_by_tag_type(
+    tag_costs_monthly = get_costs_for_group_by_tag_type(
         MONTHLY_START_DATE, MONTHLY_END_DATE, "MONTHLY", "SERVICE"
     )
-    formatted = format_costs(tag_costs)
+    formatted = format_costs(tag_costs_monthly)
     print("\n\n Costs by tag")
     with open(f"results_service_tag_monthly.tsv", "w") as file:
+        file.write("Type\tStart\tEnd\tGroup1\tGroup2\tCosts\n")
+        for line in formatted:
+            file.write("Type\t" + line + "\n")
+
+    tag_costs_daily = get_costs_for_group_by_tag_type(
+        DAILY_START_DATE, DAILY_END_DATE, "DAILY", "SERVICE"
+    )
+    formatted = format_costs(tag_costs_daily)
+    print("\n\n Costs by tag")
+    with open(f"results_service_tag_daily.tsv", "w") as file:
         file.write("Type\tStart\tEnd\tGroup1\tGroup2\tCosts\n")
         for line in formatted:
             file.write("Type\t" + line + "\n")

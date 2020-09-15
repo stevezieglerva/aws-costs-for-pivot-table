@@ -49,7 +49,6 @@ def format_costs(costs):
             group2 = group["Keys"][1].replace("Type$", "")
             if group2 == "":
                 group2 = "none"
-            print(f"-{group2}-")
             blended_cost = group["Metrics"]["BlendedCost"]["Amount"]
             if blended_cost != "0":
                 line = f'{start}\t{end}\t"{group1}"\t"{group2}"\t{blended_cost}'
