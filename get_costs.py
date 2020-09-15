@@ -20,7 +20,8 @@ previous_year = current_year - 1
 MONTHLY_START_DATE = f"{previous_year}-{current_month:02d}-01"
 MONTHLY_END_DATE = f"{current_year}-{current_month:02d}-01"
 
-previous = datetime.now() - timedelta(days=45)
+DAILY_MAX_DAYS = 30
+previous = datetime.now() - timedelta(days=DAILY_MAX_DAYS)
 DAILY_START_DATE = previous.strftime("%Y-%m-%d")
 DAILY_END_DATE = datetime.now().strftime("%Y-%m-%d")
 
@@ -28,7 +29,9 @@ DAILY_END_DATE = datetime.now().strftime("%Y-%m-%d")
 def main():
     plt.style.use("seaborn")
     get_and_write_costs_to_files()
-    service_usage_data = import_cost_file_into_df("results_service_usage_monthly.tsv")
+    service_usage_data = import_cost_file_into_df(
+        "results_service_usage_type_monthly.tsv"
+    )
     try:
         max_monthly_cost = create_services_over_time_options(
             service_usage_data, "monthly"
@@ -51,7 +54,9 @@ def main():
         print(e)
         print("Not enough monthly data for charts")
 
-    service_usage_data = import_cost_file_into_df("results_service_usage_daily.tsv")
+    service_usage_data = import_cost_file_into_df(
+        "results_service_usage_type_daily.tsv"
+    )
     max_cost = create_services_over_time_options(service_usage_data, "daily")
     create_plots_for_service_multicharts(
         service_usage_data, max_cost, "daily", DAILY_START_DATE, DAILY_END_DATE
@@ -60,38 +65,54 @@ def main():
         service_usage_data, max_cost, "daily", DAILY_START_DATE, DAILY_END_DATE
     )
 
+    ## Temp costs by tag. Data is correct, move it to create tsv file
     tag_costs = get_costs_for_group_by_tag_type(
         MONTHLY_START_DATE, MONTHLY_END_DATE, "MONTHLY", "SERVICE"
     )
     formatted = format_costs(tag_costs)
-    # print("Start\tEnd\tService\tTag\tCosts")
-
-
-##	for line in formatted:
-##		print("Type\t" + line)
+    print("\n\n Costs by tag")
+    print("Start\tEnd\tService\tTag\tCosts")
+    for line in formatted:
+        print("Type\t" + line)
 
 
 def get_and_write_costs_to_files():
-    costs = get_costs_for_group(
+    # monthly
+    ##    costs = get_costs_for_group(
+    ##        MONTHLY_START_DATE, MONTHLY_END_DATE, "MONTHLY", ["SERVICE", "USAGE_TYPE"]
+    ##    )
+    ##    formatted_json = json.dumps(costs, indent=3, default=str)
+    ##    with open("results_sample_cost.json", "w") as file:
+    ##        file.write(formatted_json)
+    ##    formatted = format_costs(costs)
+    ##    formatted_with_newlines = ["Usage\t" + i + "\n" for i in formatted]
+    ##    with open("results_service_usage_monthly.tsv", "w") as file:
+    ##        file.write("Type\tStart\tEnd\tGroup1\tGroup2\tCosts\n")
+    ##        file.writelines(formatted_with_newlines)
+    get_and_write_single_cost_file(
         MONTHLY_START_DATE, MONTHLY_END_DATE, "MONTHLY", ["SERVICE", "USAGE_TYPE"]
     )
-    formatted_json = json.dumps(costs, indent=3, default=str)
-    with open("results_sample_cost.json", "w") as file:
-        file.write(formatted_json)
-    formatted = format_costs(costs)
-    formatted_with_newlines = ["Usage\t" + i + "\n" for i in formatted]
-    with open("results_service_usage_monthly.tsv", "w") as file:
-        file.write("Type\tStart\tEnd\tGroup1\tGroup2\tCosts\n")
-        file.writelines(formatted_with_newlines)
-    costs = get_costs_for_group(
+    get_and_write_single_cost_file(
         DAILY_START_DATE, DAILY_END_DATE, "DAILY", ["SERVICE", "USAGE_TYPE"]
     )
+    get_and_write_single_cost_file(
+        DAILY_START_DATE, DAILY_END_DATE, "DAILY", ["SERVICE", "OPERATION"]
+    )
+
+
+def get_and_write_single_cost_file(start, end, time_grouping, groupby):
+    time_grouping_lower = time_grouping.lower()
+    specific_grouping = groupby[1].lower()
+    costs = get_costs_for_group(start, end, time_grouping, groupby)
+
     formatted_json = json.dumps(costs, indent=3, default=str)
     with open("results_sample_cost.json", "w") as file:
         file.write(formatted_json)
     formatted = format_costs(costs)
     formatted_with_newlines = ["Usage\t" + i + "\n" for i in formatted]
-    with open("results_service_usage_daily.tsv", "w") as file:
+    with open(
+        f"results_service_{specific_grouping}_{time_grouping_lower}.tsv", "w"
+    ) as file:
         file.write("Type\tStart\tEnd\tGroup1\tGroup2\tCosts\n")
         file.writelines(formatted_with_newlines)
 
