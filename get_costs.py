@@ -268,7 +268,7 @@ def create_plots_for_service_group_multicharts(
             ylim=(0, max_monthly_cost + 2),
             xlim=(start, end),
             title=title,
-            color=["#0000FF", "#6495ED", "#B0C4DE", "#DCDCDC"],
+            color=["#0000FF", "#b36b00", "#ff9900", "#DCDCDC"],
         )
         box = ax.get_position()
         ax.set_position(
