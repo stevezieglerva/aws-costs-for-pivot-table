@@ -261,7 +261,7 @@ def create_plots_for_service_group_multicharts(
         print(service_counts)
         title = simplify_service_name(current_service)
         ax = service_counts.plot(
-            figsize=(2, 3.5),
+            figsize=(2, 2),
             kind="bar",
             stacked=True,
             legend=False,
@@ -272,13 +272,13 @@ def create_plots_for_service_group_multicharts(
         )
         box = ax.get_position()
         ax.set_position(
-            [box.x0, box.y0 + box.height * 0.1, box.width, box.height * 0.9]
+            [box.x0, box.y0 + box.height * 0.5, box.width, box.height * 0.5]
         )
         ax.title.set_size(10)
         ax.legend(
             prop={"size": 8},
             loc="upper center",
-            bbox_to_anchor=(0.5, -0.05),
+            bbox_to_anchor=(0.5, 0.0),
             fancybox=True,
             shadow=True,
             ncol=1,
