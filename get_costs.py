@@ -1,14 +1,15 @@
-import boto3
-import json
 import calendar
-import pandas as pd
-import numpy as np
+import json
+import math
+from datetime import datetime, timedelta
+
+import boto3
 import matplotlib.pyplot as plt
-from datetime import datetime
-from datetime import timedelta
+import numpy as np
+import pandas as pd
+
 from aws import *
 from panda_helpers import *
-
 
 costs_exp = boto3.client("ce")
 
@@ -287,14 +288,22 @@ def create_plots_for_service_group_multicharts(
         plt.savefig(f"plot_top_service_{groupby_name}_{filename_qualifier}_{count}")
 
 
+def orderOfMagnitude(number):
+    return math.floor(math.log(number, 10))
+
+
 def create_treemap_file(service_data, filename_qualifier, start, end, groupby_name):
-    top_services_list = get_top_groupings(service_data, "Group1", 5)
+    total_costs = service_data["Costs"].sum()
+    service_count = 2 + orderOfMagnitude(total_costs)
+    print(f"\n\n\n\n\nTotal Costs: {total_costs}\nService Count: {service_count}\n\n")
+
+    top_services_list = get_top_groupings(service_data, "Group1", service_count)
     count = 0
     for current_service in top_services_list:
         count = count + 1
         filtered_df = service_data[service_data["Group1"] == current_service]
         service_counts = group_data_by_top_and_others(
-            filtered_df, "Group2", 3
+            filtered_df, "Group2", 2
         ).to_frame()
         service_counts.insert(1, "Service", current_service)
         grouped_by_service_and_group2 = (

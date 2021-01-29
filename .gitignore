@@ -4,3 +4,4 @@ results*.*
 *.xls*
 *.png
 __pycache__/**
+**/**/combined*.*
