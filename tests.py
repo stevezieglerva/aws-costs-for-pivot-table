@@ -3,6 +3,7 @@ from unittest.mock import patch, Mock, MagicMock, PropertyMock
 from get_costs import *
 import pandas as pd
 from aws import *
+from get_costs import *
 
 
 cost_data = {
@@ -175,6 +176,28 @@ class UnitTests(unittest.TestCase):
 
         # Act
         results = group_data_by_top_and_others(dataframe, "fruit", 2)
+
+        # Assert
+
+    def test_create_treemap_file__given_real_aws_data__then_data_is_correct(self):
+        # Arrange
+        get_and_write_costs_to_files()
+        service_usage_data = import_cost_file_into_df(
+            "results_service_usage_type_monthly.tsv"
+        )
+        current_year = datetime.now().year
+        current_month = datetime.now().month
+        previous_year = current_year - 1
+        MONTHLY_START_DATE = f"{previous_year}-{current_month:02d}-01"
+        MONTHLY_END_DATE = f"{current_year}-{current_month:02d}-01"
+        # Act
+        results = create_treemap_file(
+            service_usage_data,
+            "treemap",
+            MONTHLY_START_DATE,
+            MONTHLY_END_DATE,
+            "Group2",
+        )
 
         # Assert
 

@@ -1,0 +1,19 @@
+Service,Group2,Costs
+Amazon Simple Storage Service,DataTransfer-Out-Bytes,40.3804776802
+Amazon Simple Storage Service,Requests-Tier1,47.313775
+Amazon Simple Storage Service,TimedStorage-ByteHrs,68.6024504562
+Amazon Simple Storage Service,Other,4.4023255698999995
+AmazonCloudWatch,CW:AlarmMonitorUsage,53.26167011610001
+AmazonCloudWatch,DashboardsUsageHour,26.845967593799998
+AmazonCloudWatch,DashboardsUsageHour-Basic,8.504024107800001
+AmazonCloudWatch,Other,1.9259047005
+AWS Secrets Manager,USE1-AWSSecretsManager-Secrets,36.101971374600005
+AWS Secrets Manager,USE1-AWSSecretsManagerAPIRequest,0.00092
+Amazon Elasticsearch Service,DataTransfer-Regional-Bytes,0.1089188376
+Amazon Elasticsearch Service,ES:Magnetic-Storage,1.2780771915
+Amazon Elasticsearch Service,ESInstance:t2.small,32.616
+Amazon Elasticsearch Service,Other,0.009002172199999998
+AWS Security Hub,USE1-PaidComplianceCheck,16.207
+AWS Security Hub,USE1-PaidComplianceCheck:CISAWSFoundations,2.9690000000000003
+AWS Security Hub,USE2-PaidComplianceCheck,11.93
+AWS Security Hub,Other,2.415

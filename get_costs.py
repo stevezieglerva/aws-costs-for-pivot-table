@@ -287,5 +287,31 @@ def create_plots_for_service_group_multicharts(
         plt.savefig(f"plot_top_service_{groupby_name}_{filename_qualifier}_{count}")
 
 
+def create_treemap_file(service_data, filename_qualifier, start, end, groupby_name):
+    top_services_list = get_top_groupings(service_data, "Group1", 5)
+    count = 0
+    for current_service in top_services_list:
+        count = count + 1
+        filtered_df = service_data[service_data["Group1"] == current_service]
+        service_counts = group_data_by_top_and_others(
+            filtered_df, "Group2", 3
+        ).to_frame()
+        service_counts.insert(1, "Service", current_service)
+        grouped_by_service_and_group2 = (
+            service_counts.groupby(by=["Service", "Group2"])["Costs"]
+            .sum()
+            .rename("Costs")
+        )
+
+        print(grouped_by_service_and_group2)
+        if count == 1:
+            combined_data = grouped_by_service_and_group2
+        else:
+            combined_data = pd.concat([combined_data, grouped_by_service_and_group2])
+        print("\n\nCombined:")
+        print(combined_data.shape)
+    combined_data.to_csv("combined.csv")
+
+
 if __name__ == "__main__":
     main()
