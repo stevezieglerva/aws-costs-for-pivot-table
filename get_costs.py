@@ -96,6 +96,10 @@ def main():
     create_plots_for_service_tag_type_multicharts(
         service_tag_type_data, max_cost, "daily", DAILY_START_DATE, DAILY_END_DATE
     )
+    # Treemap
+    create_treemap_file(
+        service_usage_data, "treemap", MONTHLY_START_DATE, MONTHLY_END_DATE, "Group2",
+    )
 
 
 def get_and_write_costs_to_files():
@@ -294,7 +298,7 @@ def orderOfMagnitude(number):
 
 def create_treemap_file(service_data, filename_qualifier, start, end, groupby_name):
     total_costs = service_data["Costs"].sum()
-    service_count = 2 + orderOfMagnitude(total_costs)
+    service_count = 3 + orderOfMagnitude(total_costs)
     print(f"\n\n\n\n\nTotal Costs: {total_costs}\nService Count: {service_count}\n\n")
 
     top_services_list = get_top_groupings(service_data, "Group1", service_count)
@@ -317,9 +321,7 @@ def create_treemap_file(service_data, filename_qualifier, start, end, groupby_na
             combined_data = grouped_by_service_and_group2
         else:
             combined_data = pd.concat([combined_data, grouped_by_service_and_group2])
-        print("\n\nCombined:")
-        print(combined_data.shape)
-    combined_data.to_csv("combined.csv")
+    combined_data.to_csv("treemap.csv")
 
 
 if __name__ == "__main__":
