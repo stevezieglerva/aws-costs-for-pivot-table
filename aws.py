@@ -28,7 +28,7 @@ def get_costs_for_group_by_tag_type(start, end, granularity, groupby_value):
     groupby_list.append(item)
     item = {}
     item["Type"] = "TAG"
-    item["Key"] = "Type"
+    item["Key"] = "env"
     groupby_list.append(item)
     costs = costs_exp.get_cost_and_usage(
         TimePeriod={"Start": start, "End": end},

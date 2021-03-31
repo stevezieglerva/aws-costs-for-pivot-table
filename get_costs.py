@@ -19,7 +19,9 @@ current_month = datetime.now().month
 previous_year = current_year - 1
 
 MONTHLY_START_DATE = f"{previous_year}-{current_month:02d}-01"
-MONTHLY_END_DATE = f"{current_year}-{current_month:02d}-01"
+MONTHLY_END_DATE = datetime.now().strftime(
+    "%Y-%m-%d"
+)  # f"{current_year}-{current_month:02d}-01"
 
 DAILY_MAX_DAYS = 30
 previous = datetime.now() - timedelta(days=DAILY_MAX_DAYS)
@@ -28,7 +30,7 @@ DAILY_END_DATE = datetime.now().strftime("%Y-%m-%d")
 
 
 def main():
-    plt.style.use("seaborn")
+    # plt.style.use("seaborn")
     get_and_write_costs_to_files()
     service_usage_data = import_cost_file_into_df(
         "results_service_usage_type_monthly.tsv"
@@ -163,7 +165,7 @@ def import_cost_file_into_df(filename):
 
 
 def create_services_over_time_options(service_usage_data, filename_qualifier):
-    top_services = group_data_by_top_and_others(service_usage_data, "Group1", 5)
+    top_services = group_data_by_top_and_others(service_usage_data, "Group1", 10)
     print(top_services)
     print(top_services.to_frame().info())
     max_monthly_cost = top_services.max()
@@ -186,7 +188,7 @@ def create_services_over_time_options(service_usage_data, filename_qualifier):
 def create_plots_for_service_multicharts(
     service_usage_data, max_monthly_cost, filename_qualifier, start, end
 ):
-    top_services_list = get_top_groupings(service_usage_data, "Group1", 5)
+    top_services_list = get_top_groupings(service_usage_data, "Group1", 7)
     count = 0
     for current_service in top_services_list:
         count = count + 1
@@ -254,7 +256,7 @@ def create_plots_for_service_tag_type_multicharts(
 def create_plots_for_service_group_multicharts(
     service_data, max_monthly_cost, filename_qualifier, start, end, groupby_name
 ):
-    top_services_list = get_top_groupings(service_data, "Group1", 5)
+    top_services_list = get_top_groupings(service_data, "Group1", 7)
     count = 0
     for current_service in top_services_list:
         count = count + 1
